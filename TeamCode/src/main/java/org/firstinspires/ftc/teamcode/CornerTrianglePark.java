@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by ma61444 on 2/2/2018.
  */
 
-@Autonomous(name="CornerTrianglePark",group="Autonomous")
+//@Autonomous(name="CornerTrianglePark",group="Autonomous")
 public class CornerTrianglePark extends TriangleParkBase{
     @Override
     public void runOpMode() {

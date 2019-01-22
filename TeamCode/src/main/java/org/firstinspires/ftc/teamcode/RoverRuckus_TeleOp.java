@@ -31,11 +31,10 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import static java.lang.Math.abs;
 
@@ -55,11 +54,11 @@ import static java.lang.Math.abs;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Pushbot: Teleop Tank 2.0", group="Thunderbot")
-public class PushbotTeleopTank_2_0 extends OpMode{
+@TeleOp(name="Rover Ruckus Teleop", group="Thunderbot")
+public class RoverRuckus_TeleOp extends OpMode{
 
     /* Declare OpMode members. */
-    private HardwarePushbot2_0 robot       = new HardwarePushbot2_0(); // use the class created to define a Pushbot's hardware
+    private RoverRuckusHardware robot       = new RoverRuckusHardware(); // use the class created to define a Pushbot's hardware
 
 
     private boolean crawlMode = false;
@@ -86,12 +85,6 @@ public class PushbotTeleopTank_2_0 extends OpMode{
         robot.leftRear.setPower(0);
         robot.rightFront.setPower(0);
         robot.rightRear.setPower(0);
-
-        robot.gyro.calibrate();
-        while(robot.gyro.isCalibrating())
-        {
-            //wait for calibration to finish
-        }
     }
 
     /*
@@ -106,80 +99,15 @@ public class PushbotTeleopTank_2_0 extends OpMode{
      */
     @Override
     public void start() {
-        robot.colorSensor.enableLed(true);
-        robot.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        robot.openGrabberServo();
-        robot.stowBallServo();
     }
 
 
-    private void MoveLifter(boolean up)
-    {
-        if (up && robot.lifter.getCurrentPosition() < 5920) {
-            LifterUp();
-        } else if(!up && robot.lifter.getCurrentPosition() > 0) {
-            LifterDown();
-        }
-        else
-        {
-            LifterOff();
-        }
-    }
-
-    private void LifterUp()
-    {
-        robot.lifter.setPower(1);
-    }
-
-    private void LifterDown()
-    {
-        robot.lifter.setPower(-1);
-    }
-
-    private void LifterOff()
-    {
-        robot.lifter.setPower(0);
-    }
 
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     @Override
     public void loop() {
-
-        //Right trigger close servo
-        if (gamepad2.right_trigger > 0) {
-            robot.closeGrabberServo();
-        }
-
-        //Left trigger open servo
-        if (gamepad2.left_trigger > 0) {
-            robot.openGrabberServo();
-        }
-
-        if(gamepad2.left_bumper && gamepad2.back)
-        {
-            robot.lifter.setPower(-.5);
-            resettingLifter = true;
-        }
-        else if(resettingLifter)
-        {
-            resettingLifter = false;
-            robot.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        else if (gamepad2.left_bumper) {
-            MoveLifter(false);
-        }else if (gamepad2.right_bumper) {
-            MoveLifter(true);
-        }
-        else {
-            LifterOff();
-        }
-        telemetry.addData("motor encoder ",robot.lifter.getCurrentPosition());
-
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         if (gamepad1.a && !aWasPressed)
@@ -201,15 +129,30 @@ public class PushbotTeleopTank_2_0 extends OpMode{
 
         double magnitude = Math.max(1,maximum);
 
-        double crawl_speed = 1.0;
+        double crawl_speed = 2.0; //normal speed is half maximum
+
         if(crawlMode)
         {
-            crawl_speed = 2;
+            crawl_speed = 4.0;
         }
         robot.leftFront.setPower(left_front/magnitude/crawl_speed);
         robot.rightFront.setPower(right_front/magnitude/crawl_speed);
         robot.leftRear.setPower(left_rear/magnitude/crawl_speed);
         robot.rightRear.setPower(right_rear/magnitude/crawl_speed);
+
+        if(gamepad1.dpad_up)
+        {
+            robot.lifter.setPower(.5);
+        }
+        else if(gamepad1.dpad_down)
+        {
+            robot.lifter.setPower(-.5);
+        }
+        else
+        {
+            robot.lifter.setPower(0);
+        }
+
 
 
         telemetry.addData("gyro reading: ",robot.gyro.getHeading());
@@ -217,40 +160,17 @@ public class PushbotTeleopTank_2_0 extends OpMode{
         telemetry.addData("Color sensor blue: ", robot.colorSensor.blue());
         telemetry.addData("Color sensor green: ", robot.colorSensor.green());
 
-/*
-        bCurrState = gamepad1.x;
 
-        // check for button state transitions.
-        if ((bCurrState == true) && (bCurrState != bPrevState))  {
+//        telemetry.addData("rx: ",gamepad1.right_stick_x);
+//        telemetry.addData("ry: ",gamepad1.right_stick_y);
+//        telemetry.addData("lx: ",gamepad1.left_stick_x);
+//        telemetry.addData("ly: ",gamepad1.left_stick_y);
+//
+//        telemetry.addData("leftFront motor: ",robot.leftFront.getPower());
+//        telemetry.addData("rightFront motor: ",robot.rightFront.getPower());
+//        telemetry.addData("leftRear motor: ",robot.leftRear.getPower());
+//        telemetry.addData("rightRear motor: ",robot.rightRear.getPower());
 
-            // button is transitioning to a pressed state. So Toggle LED
-            bLedOn = !bLedOn;
-            robot.colorSensor.enableLed(bLedOn);
-        }
-
-        // update previous state variable.
-        bPrevState = bCurrState;
-        Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
-        telemetry.addData("Clear", robot.colorSensor.alpha());
-        telemetry.addData("Red  ", robot.colorSensor.red());
-        telemetry.addData("Green", robot.colorSensor.green());
-        telemetry.addData("Blue ", robot.colorSensor.blue());
-        telemetry.addData("Hue", hsvValues[0]);
-        telemetry.addLine(" ");
-        if(robot.touchSensor.isPressed())
-            telemetry.addLine("Touch Sensor Pressed");
-        else
-            telemetry.addLine("Touch Sensor Released");
-
-
-
-
-        telemetry.addLine(" ");
-        telemetry.addData("raw ultrasonic", robot.rangeSensor.rawUltrasonic());
-        telemetry.addData("raw optical", robot.rangeSensor.rawOptical());
-        telemetry.addData("cm optical", "%.2f cm", robot.rangeSensor.cmOptical());
-        telemetry.addData("cm", "%.2f cm", robot.rangeSensor.getDistance(DistanceUnit.CM));
-        telemetry.update();*/
     }
 
     /*

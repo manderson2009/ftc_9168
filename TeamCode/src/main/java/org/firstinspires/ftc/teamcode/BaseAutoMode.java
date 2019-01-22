@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public abstract class BaseAutoMode extends LinearOpMode {
 
-    HardwarePushbot2_0 robot   = new HardwarePushbot2_0();   // Use a Pushbot's hardware
+    RoverRuckusHardware robot   = new RoverRuckusHardware();   // Use a Pushbot's hardware
 
     /* Declare OpMode members. */
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
@@ -33,51 +33,8 @@ public abstract class BaseAutoMode extends LinearOpMode {
          */
         robot.init(hardwareMap);
 
-        while(!gamepad1.start)
-        {
-            robot.stowGrabberServo();
-            robot.stowBallServo();
+        robot.flipper.setPosition(0);
 
-            if (gamepad1.left_bumper) {
-                robot.lifter.setPower(-.15);
-            } else if (gamepad1.right_bumper) {
-                robot.lifter.setPower(.15);
-            }
-            else {
-                robot.lifter.setPower(0);
-            }
-
-            if(gamepad1.a)
-            {
-                redTeam = false;
-            }
-            else if(gamepad1.b)
-            {
-                redTeam = true;
-            }
-
-            if(redTeam)
-            {
-                telemetry.addData("Team: ","Red");
-            }
-            else
-            {
-                telemetry.addData("Team: ","Blue");
-            }
-
-            telemetry.update();
-        }
-
-        telemetry.addLine("Autonomous Mode Ready!");
-        if(redTeam)
-        {
-            telemetry.addLine("Red Team!");
-        }
-        else
-        {
-            telemetry.addLine("Blue Team!");
-        }
-        telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
