@@ -55,7 +55,7 @@ import static java.lang.Math.abs;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Pushbot: Teleop Tank 2.0", group="Thunderbot")
+//@TeleOp(name="Pushbot: Teleop Tank 2.0", group="Thunderbot")
 public class PushbotTeleopTank_2_0 extends OpMode{
 
     /* Declare OpMode members. */
