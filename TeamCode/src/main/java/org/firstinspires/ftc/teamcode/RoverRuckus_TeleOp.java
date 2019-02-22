@@ -155,6 +155,8 @@ public class RoverRuckus_TeleOp extends OpMode{
 
 
 
+        telemetry.addData("drive Motor position: ", robot.leftFront.getCurrentPosition());
+        telemetry.addData("Lifter Motor position: ", robot.lifter.getCurrentPosition());
         telemetry.addData("gyro reading: ",robot.gyro.getHeading());
         telemetry.addData("Color sensor red: ", robot.colorSensor.red());
         telemetry.addData("Color sensor blue: ", robot.colorSensor.blue());

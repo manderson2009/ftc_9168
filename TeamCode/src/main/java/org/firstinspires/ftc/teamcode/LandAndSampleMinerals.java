@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
     enum MineralPositionSampled {LEFT_MINERAL,CENTER_MINERAL,RIGHT_MINERAL};
 
     // Adjust these values for readings taken in playing field
-    final int BLOCK_DETECTED_RED_VALUE = 40;
+    final int BLOCK_DETECTED_RED_VALUE = 50;
     final double BLOCK_DETECTION_BLUE_RED_RATIO = 0.85;
 
     public void initAndLand() {
@@ -14,11 +16,20 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
         // Lower Robot
         {
+            // Reset encoders
+            robot.lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
             // Lift up lifter (to go down)
-            robot.lifter.setPower(0.1);
+            robot.lifter.setPower(0.2);
 
             // Wait time for robot to lower
-            sleep(5850);
+            // TODO instead of waiting, use encoder position to
+            //sleep(7080);
+            while (robot.lifter.getCurrentPosition()<3300)
+            {
+                sleep(10);
+            }
 
             // shut off lifter
             robot.lifter.setPower(0);
@@ -40,9 +51,19 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
     }
 
     public boolean navigateToMinerals() {
+        // Reset encoders
+        robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         // Reverse to mineral area
-        robot.driveForward(-.1);
-        sleep(1600);
+        robot.driveForward(-.15);
+        //sleep(1570);
+
+        while (robot.leftFront.getCurrentPosition()>-680)
+        {
+            sleep(10);
+        }
+
         robot.motorsOff();
         sleep(500);
 
@@ -69,7 +90,7 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
         }
 
         robot.crabRight(.1);
-        sleep(750);
+        sleep(1000);
 
         if(!crawlLateralToBlock())
         {
