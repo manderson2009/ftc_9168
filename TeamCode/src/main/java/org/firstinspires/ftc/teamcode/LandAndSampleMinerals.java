@@ -2,17 +2,78 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
+
 public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
-    enum MineralPositionSampled {LEFT_MINERAL,CENTER_MINERAL,RIGHT_MINERAL};
+    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
+    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
+    private static final String VUFORIA_KEY = "AZivFcz/////AAABmaeRk9g0B0LylHj9TMS3G1cRzh+973U3DW/b2f4ir/BwjiGF/qsKHhr78/ICYxLbO87UyqNo3G+h5qEcAE2IfPgZeNMN/OKPunsdMG1htEQswf2cqEZib4lcZWQSfygM4bfHvDzQ1ngpLNRQi315vZGlb70iCSPCgOloIiQimw5zs4CWfJOilwXGMg03wrUBZ81TXL/YL3BEFfVuktliLdQ2C6BQ8W2HvYojJ40cULrZT75EK8rSSHtGMrM4u7BrTiQxYisieTi1av5zpXuF/GqSEsQGYEUdg2CPUrhV7JQMlw1gkfZCe4eDaDy1l6JzhoAGsQNoZKD+pU6ht48W/Elf5ioZF/zqvHVHpPWyZmr+\n";
+
+    /**
+     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * localization engine.
+     */
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
+
+    enum MineralPositionSampled {LEFT_MINERAL,CENTER_MINERAL,RIGHT_MINERAL,NO_MINERAL};
 
     // Adjust these values for readings taken in playing field
     final int BLOCK_DETECTED_RED_VALUE = 50;
     final double BLOCK_DETECTION_BLUE_RED_RATIO = 0.85;
 
-    public void initAndLand() {
+    public void initRobot(){
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start tracking");
+        telemetry.update();
+
         //Robot will wait until PLAY is pressed on phone app
         InitLoopWaitForStartButton();
+
+
+        /** Activate Tensor Flow Object Detection. */
+        if (tfod != null) {
+            tfod.activate();
+        }
+
+
+    }
+    public void LandRobot() {
 
         // Lower Robot
         {
@@ -50,7 +111,8 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
         sleep(500);
     }
 
-    public boolean navigateToMinerals() {
+    public void navigateToMinerals(MineralPositionSampled mineralSampled) {
+        /*
         // Reset encoders
         robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -66,111 +128,149 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
         robot.motorsOff();
         sleep(500);
+         */
+
+        switch(mineralSampled)
+        {
+            case CENTER_MINERAL:
+                robot.driveForward(-.15);
+                sleep(2000);
+                robot.motorsOff();
+                sleep(500);
+                break;
+
+            case RIGHT_MINERAL:
+                //drive forward 300 ms
+                robot.driveForward(-.15);
+                sleep(300);
+                robot.motorsOff();
+                sleep(500);
+
+                // drive left 500 ms
+                robot.crabLeft(.15);
+                sleep(500);
+                robot.motorsOff();
+                sleep(500);
+
+                //drive forward 1000ms
+                robot.driveForward(-.15);
+                sleep(1000);
+                robot.motorsOff();
+                sleep(500);
+
+                break;
+
+            case LEFT_MINERAL:
+                robot.driveForward(-.15);
+                sleep(300);
+                robot.motorsOff();
+                sleep(500);
+
+                // drive left 500 ms
+                robot.crabRight(.15);
+                sleep(500);
+                robot.motorsOff();
+                sleep(500);
+
+                //drive forward 1000ms
+                robot.driveForward(-.15);
+                sleep(1000);
+                robot.motorsOff();
+                sleep(500);
+
+                break;
+        }
 
 
-        // Crawl right until color changes
-        return crawlLateralToBlock();
+
     }
 
     public MineralPositionSampled sampleMinerals(){
-        //Sample first block, if yellow hit it
-        if(blockIsYellow())
-        {
-            //hit the block
-            robot.crabLeft(.1);
-            sleep(500);
-            robot.motorsOff();
-            robot.driveForward(-.1);
-            sleep(500);
-            robot.motorsOff();
-            sleep(500);
+        MineralPositionSampled sampledMineral = MineralPositionSampled.NO_MINERAL;
+
+        // getUpdatedRecognitions() will return null if no new information is available since
+        // the last time that call was made.
+        while(sampledMineral == MineralPositionSampled.NO_MINERAL) {
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                // We changed the size to 2, since we only take a picture of the left minerals
+                if (updatedRecognitions.size() == 2) {
+                    int goldMineralX = -1;
+                    int silverMineral1X = -1;
+                    int silverMineral2X = -1;
+                    for (Recognition recognition : updatedRecognitions) {
+                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                            goldMineralX = (int) recognition.getLeft();
+                        } else if (silverMineral1X == -1) {
+                            silverMineral1X = (int) recognition.getLeft();
+                        } else {
+                            silverMineral2X = (int) recognition.getLeft();
+                        }
+                    }
+
+                    // Check if there are two silver minerals
+                    if (goldMineralX < 0) {
+                        telemetry.addData("Gold Mineral Position", "Right");
+                        sampledMineral = MineralPositionSampled.RIGHT_MINERAL;
+                    } else if (goldMineralX < silverMineral1X) {
+                        telemetry.addData("Gold Mineral Position", "Left");
+                        sampledMineral = MineralPositionSampled.LEFT_MINERAL;
+                    } else {
+                        telemetry.addData("Gold Mineral Position", "Center");
+                        sampledMineral = MineralPositionSampled.CENTER_MINERAL;
+                    }
 
 
-            return MineralPositionSampled.CENTER_MINERAL;
-        }
+                }
 
-        robot.crabRight(.1);
-        sleep(1000);
-
-        if(!crawlLateralToBlock())
-        {
-            // Couldn't find the block, hit whatever is there and move on.
-            robot.driveForward(-.1);
-            sleep(500);
-            robot.motorsOff();
-            return MineralPositionSampled.RIGHT_MINERAL;
-        }
-
-        //Sample block, if yellow hit it
-        if(blockIsYellow())
-        {
-            robot.driveForward(-.1);
-            sleep(500);
-            robot.motorsOff();
-            sleep(500);
-            //hit the block
-            return MineralPositionSampled.RIGHT_MINERAL;
-        }
-
-        // Move to left mineral based on time.
-
-        robot.driveForward(.1);
-        sleep(500);
-        robot.motorsOff();
-        sleep(500);
-
-        robot.crabLeft(.1);
-        sleep(4500);
-        robot.motorsOff();
-        sleep(500);
-
-        robot.driveForward(-.1);
-        sleep(1000);
-        robot.motorsOff();
-        sleep(500);
-
-        //Block is yellow
-        //hit the block
-        return MineralPositionSampled.LEFT_MINERAL;
-    }
-
-    public boolean crawlLateralToBlock()
-    {
-        boolean ballFound = false;
-        int i =0;
-        robot.crabRight(.1);
-        while(i<40)
-        {
-            if(robot.colorSensor.red() > BLOCK_DETECTED_RED_VALUE)
-            {
-                ballFound = true; // block/ball found
-                break;
+                telemetry.update();
             }
-            i++;
-            sleep(50);
         }
-        robot.motorsOff();
-        sleep(500);
-
-        return ballFound;
+        return sampledMineral;
     }
 
-    public boolean blockIsYellow() {
-        // Notes on sensor reading
-        // RGB values
-        // yellow block: 100,90,61
-        // White ball: 116, 130, 110
-        // compare ratio to blue/red to determine color
-        double red_scaled = robot.colorSensor.red();
-        double blue_scaled = robot.colorSensor.blue();
+    public void driveForwardInches(double inches, double power)
+    {
+        robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if(blue_scaled/red_scaled < BLOCK_DETECTION_BLUE_RED_RATIO)
+        robot.driveForward(power);
+
+        while (robot.leftFront.getCurrentPosition() > inches * robot.INCHES_TO_COUNTS_RATIO)
         {
-            return true;//Yellow block detected
+            sleep(10);
         }
-        else
-        {
-            return false;
-        }
+    }
+
+
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
+    }
+
+    /**
+     * Initialize the Tensor Flow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 }
