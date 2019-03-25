@@ -184,7 +184,7 @@ public class RoverRuckusHardware
         setRightDrive(0);
     }
 
-    final double INCHES_TO_COUNTS_RATIO = 1.0;
+    final double INCHES_TO_COUNTS_RATIO = 40.31;
 
 
 }

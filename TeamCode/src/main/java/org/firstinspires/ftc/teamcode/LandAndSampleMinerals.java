@@ -236,12 +236,21 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
         robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        robot.driveForward(.01);
+        sleep(500);
+        robot.driveForward(power/2);
+        sleep(500);
         robot.driveForward(power);
 
-        while (robot.leftFront.getCurrentPosition() > inches * robot.INCHES_TO_COUNTS_RATIO)
+        double multiplier = (0.000854 * inches) + 0.979;
+
+
+
+        while (robot.leftFront.getCurrentPosition() < inches * robot.INCHES_TO_COUNTS_RATIO * multiplier)
         {
             sleep(10);
         }
+        robot.motorsOff();
     }
 
 
