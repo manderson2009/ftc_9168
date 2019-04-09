@@ -82,7 +82,7 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
             robot.lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             // Lift up lifter (to go down)
-            robot.lifter.setPower(0.2);
+            robot.lifter.setPower(0.1);
 
             // Wait time for robot to lower
             // TODO instead of waiting, use encoder position to
@@ -109,42 +109,15 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
             robot.motorsOff();
         }
         sleep(500);
+
+        driveForwardInches(10,-.1);
     }
 
     public void navigateToMinerals(MineralPositionSampled mineralSampled) {
-        /*
-        // Reset encoders
-        robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Reverse to mineral area
-        robot.driveForward(-.15);
-        //sleep(1570);
-
-        while (robot.leftFront.getCurrentPosition()>-680)
-        {
-            sleep(10);
-        }
-
-        robot.motorsOff();
-        sleep(500);
-         */
 
         switch(mineralSampled)
         {
             case CENTER_MINERAL:
-                robot.driveForward(-.15);
-                sleep(2000);
-                robot.motorsOff();
-                sleep(500);
-                break;
-
-            case RIGHT_MINERAL:
-                //drive forward 300 ms
-                robot.driveForward(-.15);
-                sleep(300);
-                robot.motorsOff();
-                sleep(500);
 
                 // drive left 500 ms
                 robot.crabLeft(.15);
@@ -153,30 +126,31 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
                 sleep(500);
 
                 //drive forward 1000ms
-                robot.driveForward(-.15);
-                sleep(1000);
-                robot.motorsOff();
-                sleep(500);
-
+                driveForwardInches(15,-.1);
                 break;
 
-            case LEFT_MINERAL:
-                robot.driveForward(-.15);
-                sleep(300);
-                robot.motorsOff();
-                sleep(500);
-
+            case RIGHT_MINERAL:
                 // drive left 500 ms
-                robot.crabRight(.15);
-                sleep(500);
+                robot.crabLeft(.15);
+                sleep(2000);
                 robot.motorsOff();
                 sleep(500);
 
                 //drive forward 1000ms
-                robot.driveForward(-.15);
+                driveForwardInches(15,-.1);
+                break;
+
+            case LEFT_MINERAL:
+
+                // drive left 500 ms
+                robot.crabRight(.15);
                 sleep(1000);
                 robot.motorsOff();
                 sleep(500);
+
+                //drive forward 1000ms
+                driveForwardInches(15,-.1);
+
 
                 break;
         }
@@ -235,6 +209,7 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
     {
         robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sleep(100);
 
         robot.driveForward(.01);
         sleep(500);
@@ -244,13 +219,18 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
         double multiplier = (0.000854 * inches) + 0.979;
 
+        double reverse = 1;
+        if(power < 0)
+        {
+            reverse = -1;
+        }
 
-
-        while (robot.leftFront.getCurrentPosition() < inches * robot.INCHES_TO_COUNTS_RATIO * multiplier)
+        while (reverse * robot.leftFront.getCurrentPosition() < inches * robot.INCHES_TO_COUNTS_RATIO * multiplier)
         {
             sleep(10);
         }
         robot.motorsOff();
+        sleep(500);
     }
 
 

@@ -10,9 +10,10 @@ public class ParkInDepot extends LandAndSampleMinerals {
 
         initRobot();
 
-        MineralPositionSampled mineral = sampleMinerals();
 
         LandRobot();
+
+        MineralPositionSampled mineral = sampleMinerals();
 
         navigateToMinerals(mineral);
 
@@ -32,12 +33,13 @@ public class ParkInDepot extends LandAndSampleMinerals {
                 sleep(2000);
                 robot.motorsOff();
                 sleep(500);
+
                 break;
 
             case RIGHT_MINERAL:
                 robot.driveForward(-.1);
                 sleep(1000);
-                robot.rotateRight(.1);
+                robot.rotateLeft(.1);
                 sleep(750);
                 robot.driveForward(-0.1);
                 sleep(1500);
@@ -49,7 +51,7 @@ public class ParkInDepot extends LandAndSampleMinerals {
             case LEFT_MINERAL:
                 robot.driveForward(-.1);
                 sleep(1000);
-                robot.rotateLeft(.1);
+                robot.rotateRight(.1);
                 sleep(600);
                 robot.driveForward(-0.1);
                 sleep(1500);
@@ -62,6 +64,42 @@ public class ParkInDepot extends LandAndSampleMinerals {
         robot.flipper.setPosition(1);
         sleep(1000);
 
+        switch(mineralSampled)
+        {
+            case CENTER_MINERAL:
+
+                robot.rotateRight(.1);
+                sleep(1000);
+                robot.motorsOff();
+                sleep(500);
+
+
+                // drive left 500 ms
+                robot.crabRight(.15);
+                sleep(1500);
+                robot.motorsOff();
+                sleep(500);
+
+
+                driveForwardInches(76,.2);
+
+                break;
+
+            case RIGHT_MINERAL:
+
+                break;
+
+            case LEFT_MINERAL:
+                robot.rotateRight(.1);
+                sleep(500);
+                robot.motorsOff();
+                sleep(500);
+
+
+                driveForwardInches(76,.2);
+
+                break;
+        }
     }
 
 }

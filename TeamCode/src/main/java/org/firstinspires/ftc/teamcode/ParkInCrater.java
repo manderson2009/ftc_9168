@@ -9,15 +9,14 @@ public class ParkInCrater extends LandAndSampleMinerals {
     public void runOpMode() {
         initRobot();
 
-        MineralPositionSampled mineral = sampleMinerals();
 
         LandRobot();
+
+        MineralPositionSampled mineral = sampleMinerals();
 
         navigateToMinerals(mineral);
 
         parkAndClaimDepot(mineral);
-
-
 
     }
 
