@@ -42,7 +42,7 @@ public class ParkInDepot extends LandAndSampleMinerals {
                 robot.rotateLeft(.1);
                 sleep(750);
                 robot.driveForward(-0.1);
-                sleep(1500);
+                sleep(2500);
                 robot.motorsOff();
                 sleep(500);
 
@@ -76,7 +76,7 @@ public class ParkInDepot extends LandAndSampleMinerals {
 
                 // drive left 500 ms
                 robot.crabRight(.15);
-                sleep(1500);
+                sleep(1000);
                 robot.motorsOff();
                 sleep(500);
 
@@ -86,6 +86,14 @@ public class ParkInDepot extends LandAndSampleMinerals {
                 break;
 
             case RIGHT_MINERAL:
+                robot.driveForward(.1);
+                sleep(750);
+
+                robot.rotateLeft(.1);
+                sleep(1750);
+
+                driveForwardInches(87,-.2);
+
 
                 break;
 

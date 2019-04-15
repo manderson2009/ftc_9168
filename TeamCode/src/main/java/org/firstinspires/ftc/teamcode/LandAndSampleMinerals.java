@@ -41,7 +41,10 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
      */
     private TFObjectDetector tfod;
 
-    enum MineralPositionSampled {LEFT_MINERAL,CENTER_MINERAL,RIGHT_MINERAL,NO_MINERAL};
+    enum MineralPositionSampled {LEFT_MINERAL,
+        CENTER_MINERAL,
+        RIGHT_MINERAL, //From center of field viewpoint
+        NO_MINERAL};
 
     // Adjust these values for readings taken in playing field
     final int BLOCK_DETECTED_RED_VALUE = 50;
@@ -82,7 +85,7 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
             robot.lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             // Lift up lifter (to go down)
-            robot.lifter.setPower(0.1);
+            robot.lifter.setPower(0.2);
 
             // Wait time for robot to lower
             // TODO instead of waiting, use encoder position to
@@ -132,7 +135,7 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
             case RIGHT_MINERAL:
                 // drive left 500 ms
                 robot.crabLeft(.15);
-                sleep(2000);
+                sleep(1500);
                 robot.motorsOff();
                 sleep(500);
 
