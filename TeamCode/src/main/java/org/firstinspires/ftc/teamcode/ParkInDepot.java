@@ -76,7 +76,7 @@ public class ParkInDepot extends LandAndSampleMinerals {
 
                 // drive left 500 ms
                 robot.crabRight(.15);
-                sleep(1000);
+                sleep(1100);
                 robot.motorsOff();
                 sleep(500);
 

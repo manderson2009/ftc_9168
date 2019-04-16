@@ -142,11 +142,11 @@ public class RoverRuckus_TeleOp extends OpMode{
 
         if(gamepad1.dpad_up)
         {
-            robot.lifter.setPower(.5);
+            robot.lifter.setPower(.2);
         }
         else if(gamepad1.dpad_down)
         {
-            robot.lifter.setPower(-.5);
+            robot.lifter.setPower(-.2);
         }
         else
         {
