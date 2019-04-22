@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Autonomous(name="Park In Depot",group="Autonomous")
 public class ParkInDepot extends LandAndSampleMinerals {
@@ -69,28 +70,31 @@ public class ParkInDepot extends LandAndSampleMinerals {
             case CENTER_MINERAL:
 
                 robot.rotateRight(.1);
-                sleep(1000);
+                sleep(1700);
                 robot.motorsOff();
+                robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 sleep(500);
 
 
-                // drive left 500 ms
-                robot.crabRight(.15);
-                sleep(1100);
+
+                driveForwardInches(27,.2);
+
                 robot.motorsOff();
-                sleep(500);
-
-
-                driveForwardInches(76,.2);
-
+                robot.rotateLeft(.1);
+                sleep(800);
+                robot.motorsOff();
+                driveForwardInches(51,.2);
                 break;
 
             case RIGHT_MINERAL:
                 robot.driveForward(.1);
-                sleep(750);
+                sleep(500);
 
                 robot.rotateLeft(.1);
-                sleep(1750);
+                sleep(1900);
+
+                robot.motorsOff();
 
                 driveForwardInches(87,-.2);
 

@@ -123,8 +123,8 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
             case CENTER_MINERAL:
 
                 // drive left 500 ms
-                robot.crabLeft(.15);
-                sleep(500);
+                robot.crabLeft(.1);
+                sleep(750);
                 robot.motorsOff();
                 sleep(500);
 
@@ -134,8 +134,8 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
             case RIGHT_MINERAL:
                 // drive left 500 ms
-                robot.crabLeft(.15);
-                sleep(1500);
+                robot.crabLeft(.1);
+                sleep(2250);
                 robot.motorsOff();
                 sleep(500);
 
@@ -146,8 +146,8 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
             case LEFT_MINERAL:
 
                 // drive left 500 ms
-                robot.crabRight(.15);
-                sleep(1000);
+                robot.crabRight(.1);
+                sleep(1500);
                 robot.motorsOff();
                 sleep(500);
 
@@ -210,6 +210,7 @@ public abstract class LandAndSampleMinerals extends BaseAutoMode {
 
     public void driveForwardInches(double inches, double power)
     {
+        robot.motorsOff();
         robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sleep(100);
